@@ -1,6 +1,6 @@
-# ExtendedCodable
+# XTendedCodable
 
-[![CI Status](https://img.shields.io/travis/rinold/ExtendedCodable.svg?style=flat)](https://travis-ci.org/rinold/ExtendedCodable)
+[![CI Status](https://img.shields.io/travis/rinold/XTendedCodable.svg?style=flat)](https://travis-ci.org/rinold/XTendedCodable)
 ![Swift](https://img.shields.io/badge/swift-4.1-green.svg)
 ![Swift Package Manager](https://img.shields.io/badge/spm-+-orange.svg)
 [![License](https://img.shields.io/cocoapods/l/ProxyResolver.svg?style=flat)](https://cocoapods.org/pods/ProxyResolver)
@@ -8,17 +8,17 @@
 An easy way to handle JSON objects `x-^` extensions in Codable structures, e.g. the [OpenAPI Specification Extensions](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#specificationExtensions). All extension fields are aggregated in extensions `storage` field during decoding and are encoded at the same level as base object field.
 
 ## Usage
-To support extensions decoding and encoding for your Codable structs, just conform to `ExtendedCodable` protocol, e.g.:
+To support extensions decoding and encoding for your Codable structs, just conform to `XTendedCodable` protocol, e.g.:
 
 ```swift
-import ExtendedCodable
+import XTendedCodable
 
-struct ExampleCodable: ExtendedCodable {
+struct ExampleCodable: XTendedCodable {
     let name: String
     let date: Date
 
-    // Define the extension storage
-    var extensions: DefaultExtension?
+    // Default provided [String: AnyCodable]  storage
+    var extensions: XTension?
 }
 ```
 ## And that's all!
@@ -62,11 +62,15 @@ if let ext = exampleCodable.extensions {
 "c"
 ```
 
-More examples of Decoding and Encoding could be found in [tests](https://github.com/rinold/ExtendedCodable/blob/master/Tests/ExtendedCodableTests/ExtendedCodableTests.swift) sources.
+More examples of Decoding and Encoding could be found in [tests](https://github.com/rinold/XTendedCodable/blob/master/Tests/XTendedCodableTests/XTendedCodableTests.swift) sources.
+
+### Customization
+
+XTendedCodable provides `Extendable` generic protocol so you can set your own Storage type (with needed conformance limitations) and per-model fields filtering rules.
 
 ### Handling custom types
 
-Any custom type conforming Codable could be handled by just another `AnyCodable` bycicle :)
+Any custom type conforming Codable could be handled by just another `AnyCodable` bycicle, if no, I possibly messed up somewhere :)
 
 ```swift
 AnyCodable.register(CustomCodableType.self)
@@ -79,12 +83,12 @@ AnyCodable.register(CustomCodableType.self)
 To install it add following package to needed `Packages.swift` dependencies:
 
 ```swift
-.package(url: "https://github.com/rinold/ExtendedCodable.git", from: "0.1.0")
+.package(url: "https://github.com/rinold/XTendedCodable.git", from: "0.2.0")
 ```
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/rinold/ExtendedCodable/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/rinold/XTendedCodable/tags).
 
 ## Authors
 

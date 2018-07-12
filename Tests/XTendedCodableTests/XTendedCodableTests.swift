@@ -1,5 +1,5 @@
 import XCTest
-@testable import ExtendedCodable
+import XTendedCodable
 
 final class CodableExtendedTests: XCTestCase {
 
@@ -40,29 +40,33 @@ final class CodableExtendedTests: XCTestCase {
             XCTAssert(decodedExt.count == 8)
 
             // Primitives
-            XCTAssert(decodedExt["x-string"]?.to(String.self) == "Hello!")
-            XCTAssert(decodedExt["x-int"]?.to(Int.self) == 10)
-            XCTAssert(decodedExt["x-bool"]?.to(Bool.self) == false)
-            XCTAssert(decodedExt["x-double"]?.to(Double.self) == 3.14)
+            XCTAssert(decodedExt["x-string"]?.string == "Hello!")
+            XCTAssert(decodedExt["x-int"]?.int == 10)
+            XCTAssert(decodedExt["x-bool"]?.bool == false)
+            XCTAssert(decodedExt["x-double"]?.double == 3.14)
+            XCTAssert(decodedExt["x-double"]?.float == 3.14)
 
             // Nillable
             XCTAssertNotNil(decodedExt["x-nil"])
-            XCTAssertNil(decodedExt["x-nil"]!.anyValue)
+            XCTAssertNil(decodedExt["x-nil"]?.any)
 
             // Array
-            let xIntArray = decodedExt["x-int-array"]!.to([Int].self)
+            let xIntArray = decodedExt["x-int-array"]?.intArray
             XCTAssert(xIntArray == [1, 2, 3])
 
-            let xOptionalStringArray = decodedExt["x-string?-array"]!.to([String?].self)
-            XCTAssert(xOptionalStringArray == ["a", nil, "c"])
-
-            // Dictionary
-            guard let xCustom = decodedExt["x-custom"]?.to([String: AnyCodable].self) else {
+            guard let xOptionalStringArray = decodedExt["x-string?-array"]?.to([String?].self) else {
                 XCTFail()
                 return
             }
-            XCTAssert(xCustom["key"]?.to(Int.self) == -1)
-            XCTAssert(xCustom["description"]?.to(String.self) == "something")
+            XCTAssert(xOptionalStringArray == ["a", nil, "c"])
+
+            // Dictionary
+            guard let xCustom = decodedExt["x-custom"]?.dict else {
+                XCTFail()
+                return
+            }
+            XCTAssert(xCustom["key"]?.int == -1)
+            XCTAssert(xCustom["description"]?.string == "something")
 
         } catch {
             XCTFail(error.localizedDescription)
@@ -71,13 +75,14 @@ final class CodableExtendedTests: XCTestCase {
 
     func testEncode() {
         let c: Int? = nil
-        let testExt = DefaultExtension([
+        let testExt = XTension([
             "x-string": "Hello!",
             "x-int": 10,
             "x-bool": false,
             "x-double": 3.14,
             "x-int-array": [1, 2, 3],
-            "x-custom": ["key": -1],
+            "x-any-array": [1, "Welcome", false],
+            "x-custom": ["key": -1, "description": "something"],
             "x-nil": c as Any,
         ])
 
@@ -102,24 +107,34 @@ final class CodableExtendedTests: XCTestCase {
             }
             XCTAssert(decodedExt.count == testExt.count)
 
+            XCTAssert(decodedExt["x-int"]?.int == codable.xInt)
+
             // Primitives
-            XCTAssert(decodedExt["x-string"]?.to(String.self) == testExt["x-string"]?.to(String.self))
-            XCTAssert(decodedExt["x-int"]?.to(Int.self) == testExt["x-int"]?.to(Int.self))
-            XCTAssert(decodedExt["x-bool"]?.to(Bool.self) == testExt["x-bool"]?.to(Bool.self))
-            XCTAssert(decodedExt["x-double"]?.to(Double.self) == testExt["x-double"]?.to(Double.self))
+            XCTAssert(decodedExt["x-string"]?.string == testExt["x-string"]?.string)
+            XCTAssert(decodedExt["x-int"]?.int == testExt["x-int"]?.int)
+            XCTAssert(decodedExt["x-bool"]?.bool == testExt["x-bool"]?.bool)
+            XCTAssert(decodedExt["x-double"]?.double == testExt["x-double"]?.double)
+            XCTAssert(decodedExt["x-double"]?.float == testExt["x-double"]?.float)
 
             // Array
-            XCTAssert(decodedExt["x-int-array"]?.to([Int].self) == testExt["x-int-array"]?.to([Int].self))
+            XCTAssert(decodedExt["x-int-array"]?.intArray == testExt["x-int-array"]?.intArray)
+
+            guard let xAnyArray = decodedExt["x-any-array"]?.array else {
+                XCTFail()
+                return
+            }
+            XCTAssert(xAnyArray.count == 3)
 
             // Dictionary
-            guard let xCustom = decodedExt["x-custom"]?.to([String: AnyCodable].self),
-                let xTestCustom = testExt["x-custom"]?.to([String: Any].self)
+            guard let xCustom = decodedExt["x-custom"]?.dict,
+                let xTestCustom = testExt["x-custom"]?.dict
             else {
                 XCTFail()
                 return
             }
-            XCTAssert(xCustom["key"]?.to(Int.self) == xTestCustom["key"] as? Int)
-            XCTAssert(xCustom["description"]?.to(String.self) == xTestCustom["String"] as? String)
+            XCTAssert(xCustom.count == 2)
+            XCTAssert(xCustom["key"]?.int == xTestCustom["key"]?.int)
+            XCTAssert(xCustom["description"]?.string == xTestCustom["description"]?.string)
         } catch {
             XCTFail(error.localizedDescription)
         }
