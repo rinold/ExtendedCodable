@@ -9,7 +9,13 @@ extension Dictionary: DecodableKeyValueContainer where Key == String, Value == A
 }
 
 extension Extendable where ExtensionStorage == XTension {
-    public mutating func filterExtensionStorage(keys: [String]) -> [String] {
+
+    public func filteredStorageKeysForDecoding(keys: [String]) -> [String] {
         return keys.filter { $0.hasPrefix("x-") }
     }
+
+    public func filteredStorageForEncoding() -> XTension? {
+        return extensions?.filter { $0.key.hasPrefix("x-") }
+    }
+    
 }

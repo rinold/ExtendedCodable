@@ -8,7 +8,7 @@ public struct ExtensionExtractor<T>: Encodable where T: Extendable {
         var extendableBase = extendable
         extendableBase.extensions = nil
         base = extendableBase
-        extensions = extendable.extensions
+        extensions = extendable.filteredStorageForEncoding()
     }
 
     public func encode(to encoder: Encoder) throws {

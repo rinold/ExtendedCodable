@@ -10,9 +10,16 @@ public protocol DecodableKeyValueContainer {
 }
 
 public protocol Extendable: Codable {
+    /// Type used for extensions storaging
     associatedtype ExtensionStorage: Codable & DecodableKeyValueContainer
 
+    /// Extension fields storage
     var extensions: ExtensionStorage? { get set }
-    mutating func filterExtensionStorage(keys: [ExtensionStorage.Key]) -> [ExtensionStorage.Key]
+
+    /// Pre-decode filtering
+    func filteredStorageKeysForDecoding(keys: [ExtensionStorage.Key]) -> [ExtensionStorage.Key]
+
+    /// Pre-encode filtering
+    func filteredStorageForEncoding() -> ExtensionStorage?
 }
 
