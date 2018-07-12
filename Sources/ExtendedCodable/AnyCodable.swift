@@ -125,4 +125,12 @@ public struct AnyCodable: Codable {
         }
     }
 
+    public func to<T>(_ type: Array<T?>.Type) -> [T?]? {
+        if let anyCodableSequence = anyValue as? [AnyCodable] {
+            return anyCodableSequence.map { $0.anyValue as? T }
+        } else {
+            return (anyValue as? [Any])?.map { $0 as? T }
+        }
+    }
+
 }
