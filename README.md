@@ -21,7 +21,7 @@ struct ExampleCodable: XTendedCodable {
     var extensions: XTension?
 }
 ```
-## And that's all!
+## And that's all! :)
 
 It can now decode the `x-^` properties from JSON:
 ```json
@@ -63,6 +63,21 @@ if let ext = exampleCodable.extensions {
 ```
 
 More examples of Decoding and Encoding could be found in [tests](https://github.com/rinold/XTendedCodable/blob/master/Tests/XTendedCodableTests/XTendedCodableTests.swift) sources.
+
+#### Bonus
+
+You can add properties to your `ExampleCodable` later in extensions or just for convenience if you know what you will be working with, e.g.:
+
+```swift
+extension TestCodable {
+    var xProperty: Int? {
+        get { return extensions?["x-some-property"]?.int }
+        set { extensions?["x-some-property"] = .init(from: newValue) }
+    }
+}
+```
+
+**Note**: non-prefixed with "x-" keys will not be encoded. Possibly, you can use this to hide some properties from decoding/encoding - without modifying `CodingKeys`, `decode` and `encode` methods.
 
 ### Customization
 
