@@ -8,6 +8,7 @@ final class CodableExtendedTests: XCTestCase {
 {
     "name" : "TestName",
     "num" : 10,
+    "timestamp": "2018-07-12T09:13:42Z",
     "x-bool" : false,
     "x-custom" : {
         "key" : -1,
@@ -23,6 +24,9 @@ final class CodableExtendedTests: XCTestCase {
 """
         let data = jsonString.data(using: .utf8)!
         let decoder = JSONDecoder()
+        if #available(OSX 10.12, *) {
+            decoder.dateDecodingStrategy = .iso8601
+        }
         do {
             let decodedResult = try decoder.decode(TestCodable.self, from: data)
 
@@ -77,17 +81,17 @@ final class CodableExtendedTests: XCTestCase {
             "x-nil": c as Any,
         ])
 
-        let testCodable = TestCodable(name: "TestName", num: 10, extensions: testExt)
+        let testCodable = TestCodable(name: "TestName", num: 10, timestamp: Date(), extensions: testExt)
 
         let encoder = JSONEncoder()
+        let decoder = JSONDecoder()
+        if #available(OSX 10.12, *) {
+            encoder.dateEncodingStrategy = .iso8601
+            decoder.dateDecodingStrategy = .iso8601
+        }
         encoder.outputFormatting = .prettyPrinted
         do {
             let data = try encoder.encode(testCodable)
-            if let str = String(data: data, encoding: .utf8) {
-                print (str)
-            }
-
-            let decoder = JSONDecoder()
             let codable = try decoder.decode(TestCodable.self, from: data)
 
             XCTAssert(codable.name == testCodable.name)
