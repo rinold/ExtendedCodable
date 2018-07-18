@@ -99,6 +99,23 @@ final class CodableExtendedTests: XCTestCase {
         }
     }
 
+    func testDecodeOptionalUsingJSONDecoder() {
+        let data = singleTestCodableJSON.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        if #available(OSX 10.12, *) {
+            decoder.dateDecodingStrategy = .iso8601
+        }
+        do {
+            guard let decodedResult = try decoder.decode(TestCodable?.self, from: data) else {
+                XCTFail()
+                return
+            }
+            assertSignleObject(decodedResult)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
     func testDecodeArrayUsingJSONDecoder() {
         let arrayWithTestCodableJSON = "[\(singleTestCodableJSON)]"
         let data = arrayWithTestCodableJSON.data(using: .utf8)!
@@ -117,6 +134,44 @@ final class CodableExtendedTests: XCTestCase {
         }
     }
 
+    func testDecodeOptionalArrayUsingJSONDecoder() {
+        let arrayWithTestCodableJSON = "[\(singleTestCodableJSON)]"
+        let data = arrayWithTestCodableJSON.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        if #available(OSX 10.12, *) {
+            decoder.dateDecodingStrategy = .iso8601
+        }
+        do {
+            guard let decodedResult = try decoder.decode([TestCodable]?.self, from: data)?.first else {
+                XCTFail()
+                return
+            }
+            assertSignleObject(decodedResult)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
+    func testDecodeArrayOfOptionalUsingJSONDecoder() {
+        let arrayWithTestCodableJSON = "[\(singleTestCodableJSON)]"
+        let data = arrayWithTestCodableJSON.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        if #available(OSX 10.12, *) {
+            decoder.dateDecodingStrategy = .iso8601
+        }
+        do {
+            guard let first = try decoder.decode([TestCodable?].self, from: data).first,
+                let decodedResult = first
+            else {
+                XCTFail()
+                return
+            }
+            assertSignleObject(decodedResult)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
     func testDecodeUsingKeyedContainer() {
         let keyedTestCodableJSON = "{\"testCodable\": \(singleTestCodableJSON)}"
         let data = keyedTestCodableJSON.data(using: .utf8)!
@@ -125,7 +180,62 @@ final class CodableExtendedTests: XCTestCase {
             decoder.dateDecodingStrategy = .iso8601
         }
         do {
-            guard let decodedResult = try decoder.decode(TestKeyedCodingHelper.self, from: data).testCodable else {
+            let decodedResult = try decoder.decode(TestSingleKeyedCodingHelper.self, from: data).testCodable
+            assertSignleObject(decodedResult)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
+    func testDecodeArrayUsingKeyedContainer() {
+        let keyedArrayOfTestCodableJSON = "{\"arrayOfTestCodable\": [\(singleTestCodableJSON)]}"
+        let data = keyedArrayOfTestCodableJSON.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        if #available(OSX 10.12, *) {
+            decoder.dateDecodingStrategy = .iso8601
+        }
+        do {
+            let array = try decoder.decode(TestArrayKeyedCodingHelper.self, from: data).arrayOfTestCodable
+            guard let decodedResult = array.first else {
+                XCTFail()
+                return
+            }
+            assertSignleObject(decodedResult)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+
+    }
+
+    func testDecodeOptionalUsingKeyedContainer() {
+        let keyedTestCodableJSON = "{\"testCodable\": \(singleTestCodableJSON)}"
+        let data = keyedTestCodableJSON.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        if #available(OSX 10.12, *) {
+            decoder.dateDecodingStrategy = .iso8601
+        }
+        do {
+            guard let decodedResult = try decoder.decode(TestOptionalKeyedCodingHelper.self, from: data).testCodable else {
+                XCTFail()
+                return
+            }
+            assertSignleObject(decodedResult)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
+    func testDecodeOptionalArrayUsingKeyedContainer() {
+        let keyedArrayOfTestCodableJSON = "{\"arrayOfTestCodable\": [\(singleTestCodableJSON)]}"
+        let data = keyedArrayOfTestCodableJSON.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        if #available(OSX 10.12, *) {
+            decoder.dateDecodingStrategy = .iso8601
+        }
+        do {
+            guard let array = try decoder.decode(TestOptionalKeyedCodingHelper.self, from: data).arrayOfTestCodable,
+                let decodedResult = array.first
+            else {
                 XCTFail()
                 return
             }
@@ -174,8 +284,14 @@ final class CodableExtendedTests: XCTestCase {
 
     static var allTests = [
         ("testDecodeUsingJSONDecoder", testDecodeUsingJSONDecoder),
+        ("testDecodeOptionalUsingJSONDecoder", testDecodeOptionalUsingJSONDecoder),
         ("testDecodeArrayUsingJSONDecoder", testDecodeArrayUsingJSONDecoder),
+        ("testDecodeOptionalArrayUsingJSONDecoder", testDecodeOptionalArrayUsingJSONDecoder),
+        ("testDecodeArrayOfOptionalUsingJSONDecoder", testDecodeArrayOfOptionalUsingJSONDecoder),
         ("testDecodeUsingKeyedContainer", testDecodeUsingKeyedContainer),
+        ("testDecodeOptionalUsingKeyedContainer", testDecodeOptionalUsingKeyedContainer),
+        ("testDecodeArrayUsingKeyedContainer", testDecodeArrayUsingKeyedContainer),
+        ("testDecodeOptionalArrayUsingKeyedContainer", testDecodeOptionalArrayUsingKeyedContainer),
         ("testEncodeUsingJSONEncoder", testEncodeUsingJSONEncoder),
         ("testEncodeArrayUsingJSONEncoder", testEncodeArrayUsingJSONEncoder),
     ]

@@ -19,7 +19,15 @@ extension TestCodable {
     }
 }
 
-struct TestKeyedCodingHelper: Codable {
+struct TestSingleKeyedCodingHelper: Codable {
+    let testCodable: TestCodable
+}
+
+struct TestArrayKeyedCodingHelper: Codable {
+    let arrayOfTestCodable: [TestCodable]
+}
+
+struct TestOptionalKeyedCodingHelper: Codable {
     let testCodable: TestCodable?
     let arrayOfTestCodable: [TestCodable]?
 }
