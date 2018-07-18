@@ -98,7 +98,7 @@ AnyCodable.register(CustomCodableType.self)
 To install it add following package to needed `Packages.swift` dependencies:
 
 ```swift
-.package(url: "https://github.com/rinold/XTendedCodable.git", from: "0.2.0")
+.package(url: "https://github.com/rinold/XTendedCodable.git", from: "0.2.1")
 ```
 
 ## Versioning
