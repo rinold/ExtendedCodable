@@ -18,3 +18,8 @@ extension TestCodable {
         set { extensions?["x-int"] = .init(from: newValue) }
     }
 }
+
+struct TestKeyedCodingHelper: Codable {
+    let testCodable: TestCodable?
+    let arrayOfTestCodable: [TestCodable]?
+}
