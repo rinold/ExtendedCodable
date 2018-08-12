@@ -1,10 +1,11 @@
 
 /// Helper providing the injection of Specification Extensions into target object during decoding
-public struct ExtensionInjector<T>: Decodable where T: Extendable & Decodable {
+public struct ExtensionInjector<T>: Decodable where T: Extendable {
     public var extendable: T
 
     typealias StorageKey = T.ExtensionStorage.Key
     typealias StorageValue = T.ExtensionStorage.Value
+
     struct DummyDecodable: Decodable { }
 
     public init(from decoder: Decoder) throws {
@@ -18,5 +19,4 @@ public struct ExtensionInjector<T>: Decodable where T: Extendable & Decodable {
         }
         extendable.extensions = storage
     }
-
 }
